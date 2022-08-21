@@ -92,7 +92,7 @@ app.layout = html.Div(children=[
         html.H2(children='DID and RDD models based on project conducted in Quantitative Analytics class as part of MS Data Analytics degree at University of Wisconsin-Whitewater'),
         html.H5(children='Data provided as part of coursework and is to assess performance after a chance. Change being workig from home, performance being measured as Sales'),
         html.H5(children='Null Hypothesis: Working From Home results in lower productivity.'),
-        html.H5(children= 'Please see github for code detail: https://github.com/skmcwilliams/decision_app' ),
+        dcc.Markdown(children= 'Please see github for code detail: https://github.com/skmcwilliams/decision_app' ),
         ]),
     
     
@@ -101,11 +101,12 @@ app.layout = html.Div(children=[
                      Resulting DataFrame is below'),
         html.H4(children='Databelow after modifying years and adding dummies for post, and post treatment'),
         generate_table(wfh),
-        generate_table(yr_wfh),
         ]),
                      
     html.Div([
         html.H4(children='Data Check to make sure years are even and view distribution'),
+        html.H6(children='Make sure distribution of synthetic-years is even.'),
+        generate_table(yr_wfh),
         dcc.Graph(figure = year_bar),
         dcc.Graph(figure = state_bar),
         dcc.Graph(figure = sales_by_state),
@@ -114,16 +115,16 @@ app.layout = html.Div(children=[
         ]),
                      
     html.Div([
-        html.H4(children = 'First, conduct nonparametric DID calclations on the post-treatment group (Wisconsinites) by running statsmodels ols with sales as RHS variable and post, treatment, post-treatment as LHS, Results below.'),
-        generate_table(results_wfh),
-        html.H6(children = f'{did_conclusion}'),
-                html.H6(children=f'Post-treatment t-statistic of {para_t_stat} is greater than 2.575, making the post-treatment relevant at the 99% Confidence Level. Reject null hypothesis that working from home will hinder performance'),
-
+        html.H4(children = 'Nonparametric DID calclations on the post-treatment group (Wisconsinites)'),
         generate_table(diffdf),
+        html.H6(children = f'{did_conclusion}'),
+        html.H4(children = 'Parametric analysis of post-treatment group.'),
+        generate_table(results_wfh),
+        html.H6(children=f'Post-treatment t-statistic of {para_t_stat} is greater than 2.575, making the post-treatment relevant at the 99% Confidence Level. Reject null hypothesis that working from home will hinder performance'),
         ]),
     
     html.Div([
-        html.H4(children='Next, run parametric RDD calculations via regression model (statsmodels OLS)\
+        html.H4(children='Parametric RDD calculations via regression model (statsmodels OLS)\
                      on post_years (# of years beyond 2019) and the threshold. Threshold = 1 where post_years > 0 else 0'),
         generate_table(rdd_df),
         generate_table((rdd_results)),
