@@ -70,14 +70,15 @@ diffdf = pd.DataFrame([firstdiff,seconddiff,did]).T.rename(columns={0:"First Dif
 #%%wfh parametric
 results = smf.ols('sales ~ post + treat + post_treat',wfh).fit()
 results_wfh = pd.read_html(results.summary().tables[1].as_html(),header=0,index_col=0)[0]
-para_t_stat = results_wfh.at['post_treat','t']
+results_wfh = results_wfh.reset_index()
+para_t_stat = results_wfh.at[3,'t']
 para_conclusion = t_test(para_t_stat)
 #%% 
 rdd_df = wfh.assign(threshold=(wfh["post_years"] > 0).astype(int)) #years 2020 and 2021
 rdd = smf.ols('sales ~ post_years * threshold',rdd_df).fit()
 rdd_results = pd.read_html(rdd.summary().tables[1].as_html(),header=0,index_col=0)[0]
 rdd_results = rdd_results.reset_index()
-rdd_t_stat = rdd_results.at['threshold','t']
+rdd_t_stat = rdd_results.at[2,'t']
 t_test(rdd_t_stat)
 #%% # STANDARD DASH APP LANGUAGE
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
