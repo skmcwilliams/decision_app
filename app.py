@@ -117,7 +117,7 @@ app.layout = html.Div(children=[
         html.H4(children = 'First, conduct nonparametric DID calclations on the post-treatment group (Wisconsinites) by running statsmodels ols with sales as RHS variable and post, treatment, post-treatment as LHS, Results below.'),
         generate_table(results_wfh),
         html.H6(children = f'{did_conclusion}'),
-                dcc.H6(children=f'Post-treatment t-statistic of {para_t_stat} is greater than 2.575, making the post-treatment relevant at the 99% Confidence Level. Reject null hypothesis that working from home will hinder performance'),
+                html.H6(children=f'Post-treatment t-statistic of {para_t_stat} is greater than 2.575, making the post-treatment relevant at the 99% Confidence Level. Reject null hypothesis that working from home will hinder performance'),
 
         generate_table(diffdf),
         ]),
