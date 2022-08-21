@@ -51,12 +51,12 @@ wfh['post'] = np.where(wfh['mod_year'] >= 2020, 1, 0) # make 2020 as threshold o
 wfh['post_years'] = wfh['mod_year'] - 2019
 wfh['post_treat'] = wfh['post'] * wfh['treat'] # Interaction Term  to make dummy for post_treatment group = Wisconsin and 2017#%
 #%% charts
-year_bar = px.bar(wfh.groupby('mod_year').size()).update_xaxes(type='category')
-state_bar = px.bar(wfh.groupby('state').size())
-sales_by_state = px.histogram(wfh,x='sales',color='state',barmode='stack') # show distribution of sales by state
-sales_by_year = px.histogram(wfh,x='sales',color='mod_year',barmode='stack') # distribution of sales by year
+year_bar = px.bar(wfh.groupby('mod_year').size(),title='Count of Modified Years').update_xaxes(type='category')
+state_bar = px.bar(wfh.groupby('state').size(),title = 'Count of Each State')
+sales_by_state = px.histogram(wfh,x='sales',color='state',barmode='stack',title = 'Stacked Sales Histogram by State') # show distribution of sales by state
+sales_by_year = px.histogram(wfh,x='sales',color='mod_year',barmode='stack',itle = 'Stacked Sales Histogram by Modified Year') # distribution of sales by year
 sales_over_time = px.line(wfh.groupby(['state','mod_year'])['sales'].sum().reset_index(),
-                       x='mod_year',y='sales',color='state').update_xaxes(type='category') # chart of state and sales
+                       x='mod_year',y='sales',color='state',title = 'Sales Over Time').update_xaxes(type='category') # chart of state and sales
 #%%nonparametric analysis
 sales_2016 = sum(wfh['sales'][wfh['post']==0])
 firstdiff = sum(wfh['sales'][wfh['post_treat'] == 1])\
@@ -65,7 +65,7 @@ seconddiff = sum(wfh['sales'][(wfh['treat'] == 0) * (wfh['post'] == 1)])\
     - sum(wfh['sales'][(wfh['treat'] == 0) * (wfh['post'] == 0)])
 did = firstdiff - seconddiff
 did_conclusion = f"DID of {did} equates to {round((did/sales_2016)*100,2)}% sales increase over 2016 total sales"
-diffdf = pd.DataFrame([firstdiff,seconddiff,did]).T.rename(columns={0:"First Difference",1:"Second Difference",2:"DID"}).reset_index()
+diffdf = pd.DataFrame([firstdiff,seconddiff,did]).T.rename(columns={0:"First Difference",1:"Second Difference",2:"DID"})
 
 #%%wfh parametric
 results = smf.ols('sales ~ post + treat + post_treat',wfh).fit()
@@ -127,7 +127,7 @@ app.layout = html.Div(children=[
                      on post_years (# of years beyond 2019) and the threshold. Threshold = 1 where post_years > 0 else 0'),
         generate_table(rdd_df),
         generate_table((rdd_results)),
-        dcc.Markdown(children='High t-statistic for Threshold variable indicates that years beyond 2019, the WFH years, produce higher sales with a 99% Confidene Level')
+        dcc.Markdown(children='High t-statistic for Threshold variable indicates that years beyond 2019, the WFH years, produce higher sales with a 99% Confidence Level')
         ])
 ])
 
