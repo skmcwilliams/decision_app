@@ -28,7 +28,7 @@ def t_test(t_statistic):
             return f"T-statistic of {round(t_statistic,2)} does not pass {k}% confidence level, accept null"
 
 
-def generate_table(dataframe, max_rows=26):
+def generate_table(dataframe, max_rows=5):
     return html.Table(
         # Header
         [html.Tr([html.Th(col) for col in dataframe.columns]) ] +
@@ -99,7 +99,7 @@ app.layout = html.Div(children=[
     html.Div([
         html.H4(children='Data provided was only for years 2016 and 2017, synthetic years were created from 2018-2021, with 2020 onward being the treatment period of Working From Home.\
                      Resulting DataFrame is below'),
-        html.H4(children='Databelow after modifying years and adding dummies for post, and post treatment'),
+        html.H4(children='Snapshot of DataFrame after modifying years and adding dummies for post, and post treatment'),
         generate_table(wfh),
         ]),
                      
