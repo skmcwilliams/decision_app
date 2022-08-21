@@ -97,15 +97,15 @@ app.layout = html.Div(children=[
     
     
     html.Div([
-        dcc.H4(children='Data provided was only for years 2016 and 2017, synthetic years were created from 2018-2021, with 2020 onward being the treatment period of Working From Home.\
+        html.H4(children='Data provided was only for years 2016 and 2017, synthetic years were created from 2018-2021, with 2020 onward being the treatment period of Working From Home.\
                      Resulting DataFrame is below'),
-        dcc.H4(children='Databelow after modifying years and adding dummies for post, and post treatment'),
+        html.H4(children='Databelow after modifying years and adding dummies for post, and post treatment'),
         generate_table(wfh),
         generate_table(yr_wfh),
         ]),
                      
     html.Div([
-        dcc.H4(children='Data Check to make sure years are even and view distribution'),
+        html.H4(children='Data Check to make sure years are even and view distribution'),
         dcc.Graph(figure = year_bar),
         dcc.Graph(figure = state_bar),
         dcc.Graph(figure = sales_by_state),
@@ -114,20 +114,20 @@ app.layout = html.Div(children=[
         ]),
                      
     html.Div([
-        dcc.H4(children = 'First, conduct nonparametric DID calclations on the post-treatment group (Wisconsinites) by running statsmodels ols with sales as RHS variable and post, treatment, post-treatment as LHS, Results below.'),
+        html.H4(children = 'First, conduct nonparametric DID calclations on the post-treatment group (Wisconsinites) by running statsmodels ols with sales as RHS variable and post, treatment, post-treatment as LHS, Results below.'),
         generate_table(results_wfh),
-        dcc.H6(children = f'{did_conclusion}'),
+        html.H6(children = f'{did_conclusion}'),
                 dcc.H6(children=f'Post-treatment t-statistic of {para_t_stat} is greater than 2.575, making the post-treatment relevant at the 99% Confidence Level. Reject null hypothesis that working from home will hinder performance'),
 
         generate_table(diffdf),
         ]),
     
     html.Div([
-        dcc.H4(children='Next, run parametric RDD calculations via regression model (statsmodels OLS)\
+        html.H4(children='Next, run parametric RDD calculations via regression model (statsmodels OLS)\
                      on post_years (# of years beyond 2019) and the threshold. Threshold = 1 where post_years > 0 else 0'),
         generate_table(rdd_df),
         generate_table((rdd_results)),
-        dcc.H6(children=f'Threshold t-statistic of {rdd_t_stat} indicates that years beyond 2019, the WFH years, produce higher sales with a 99% Confidence Level')
+        html.H6(children=f'Threshold t-statistic of {rdd_t_stat} indicates that years beyond 2019, the WFH years, produce higher sales with a 99% Confidence Level')
         ])
 ])
 
