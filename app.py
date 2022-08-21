@@ -51,8 +51,8 @@ wfh['post'] = np.where(wfh['mod_year'] >= 2020, 1, 0) # make 2020 as threshold o
 wfh['post_years'] = wfh['mod_year'] - 2019
 wfh['post_treat'] = wfh['post'] * wfh['treat'] # Interaction Term  to make dummy for post_treatment group = Wisconsin and 2017#%
 #%% charts
-year_bar = px.bar(wfh.groupby('mod_year').size(),title='Count of Modified Years').update_xaxes(type='category')
-state_bar = px.bar(wfh.groupby('state').size(),title = 'Count of Each State')
+year_bar = px.bar(wfh.groupby('mod_year').size(),title='Review Distribution of Modified Years').update_xaxes(type='category')
+state_bar = px.bar(wfh.groupby('state').size(),title = 'Distribution of State')
 sales_by_state = px.histogram(wfh,x='sales',color='state',barmode='stack',title = 'Stacked Sales Histogram by State') # show distribution of sales by state
 sales_by_year = px.histogram(wfh,x='sales',color='mod_year',barmode='stack',title = 'Stacked Sales Histogram by Modified Year') # distribution of sales by year
 sales_over_time = px.line(wfh.groupby(['state','mod_year'])['sales'].sum().reset_index(),
@@ -104,9 +104,6 @@ app.layout = html.Div(children=[
         ]),
                      
     html.Div([
-        html.H4(children='Data Check to make sure years are even and view distribution'),
-        html.H6(children='Make sure distribution of synthetic-years is even.'),
-        generate_table(yr_wfh),
         dcc.Graph(figure = year_bar),
         dcc.Graph(figure = state_bar),
         dcc.Graph(figure = sales_by_state),
@@ -124,9 +121,10 @@ app.layout = html.Div(children=[
         ]),
     
     html.Div([
-        html.H4(children='Parametric RDD calculations via regression model (statsmodels OLS)\
+        html.H6(children='Parametric RDD calculations via regression model (statsmodels OLS)\
                      on post_years (# of years beyond 2019) and the threshold. Threshold = 1 where post_years > 0 else 0'),
         generate_table(rdd_df),
+        html.H6(children = 'Results of Parametric RDD model'),
         generate_table((rdd_results)),
         html.H6(children=f'Threshold t-statistic of {rdd_t_stat} indicates that years beyond 2019, the WFH years, produce higher sales with a 99% Confidence Level')
         ])
