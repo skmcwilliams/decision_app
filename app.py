@@ -113,7 +113,7 @@ app.layout = html.Div(children=[
     html.Div([
         dcc.Markdown(children = 'First, conduct nonparametric DID calclations on the post-treatment group (Wisconsinites) by running statsmodels ols with sales as RHS variable and post, treatment, post-treatment as LHS, Results below.'),
         generate_table(results_wfh),
-        dcc.Mardkown(children='Post-treatment t-statistic greater than 2.575, making the post-treatment relevant at 99% Confidence Level. Reject null hypothesis that working from home will hinder performance.'),
+        dcc.Markdown(children='Post-treatment t-statistic greater than 2.575, making the post-treatment relevant at 99% Confidence Level. Reject null hypothesis that working from home will hinder performance.'),
         dcc.Markdown(children = f'{did_conclusion}'),
         generate_table(diffdf)
         
