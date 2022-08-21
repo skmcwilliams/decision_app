@@ -18,5 +18,5 @@ six==1.15.0
 Werkzeug==1.0.1
 pandas==1.*
 numpy==1.*
-statsmodels==0.13*
+statsmodels==0.13.*
 
