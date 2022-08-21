@@ -90,11 +90,9 @@ app.layout = html.Div(children=[
     html.Div([
         html.H1(children='Difference In Difference and Regression Discontinuity Design Models'),
         html.H2(children='DID and RDD models based on project conducted in Quantitative Analytics class as part of MS Data Analytics degree at University of Wisconsin-Whitewater'),
-        html.H5(children='Data provided as part of coursework and is to assess performance after a chance. Change being workig from home, performance being measured as Sales'),
         html.H5(children='Null Hypothesis: Working From Home results in lower productivity.'),
         dcc.Markdown(children= 'Please see github for code detail: https://github.com/skmcwilliams/decision_app' ),
         ]),
-    
     
     html.Div([
         html.H4(children='Data provided was only for years 2016 and 2017, synthetic years were created from 2018-2021, with 2020 onward being the treatment period of Working From Home.\
