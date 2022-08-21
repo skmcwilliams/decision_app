@@ -54,7 +54,7 @@ wfh['post_treat'] = wfh['post'] * wfh['treat'] # Interaction Term  to make dummy
 year_bar = px.bar(wfh.groupby('mod_year').size(),title='Count of Modified Years').update_xaxes(type='category')
 state_bar = px.bar(wfh.groupby('state').size(),title = 'Count of Each State')
 sales_by_state = px.histogram(wfh,x='sales',color='state',barmode='stack',title = 'Stacked Sales Histogram by State') # show distribution of sales by state
-sales_by_year = px.histogram(wfh,x='sales',color='mod_year',barmode='stack',itle = 'Stacked Sales Histogram by Modified Year') # distribution of sales by year
+sales_by_year = px.histogram(wfh,x='sales',color='mod_year',barmode='stack',title = 'Stacked Sales Histogram by Modified Year') # distribution of sales by year
 sales_over_time = px.line(wfh.groupby(['state','mod_year'])['sales'].sum().reset_index(),
                        x='mod_year',y='sales',color='state',title = 'Sales Over Time').update_xaxes(type='category') # chart of state and sales
 #%%nonparametric analysis
