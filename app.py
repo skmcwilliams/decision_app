@@ -88,24 +88,24 @@ server = app.server
 # CUSTOM DASH APP LANGUAGE
 app.layout = html.Div(children=[
     html.Div([
-        html.H4(children='Difference In Difference and Regression Discontinuity Design Models'),
-        html.H5(children='DID and RDD models based on project conducted in Quantitative Analytics class as part of MS Data Analytics degree at University of Wisconsin-Whitewater'),
+        html.H1(children='Difference In Difference and Regression Discontinuity Design Models'),
+        html.H2(children='DID and RDD models based on project conducted in Quantitative Analytics class as part of MS Data Analytics degree at University of Wisconsin-Whitewater'),
         html.H5(children='Data provided as part of coursework and is to assess performance after a chance. Change being workig from home, performance being measured as Sales'),
-        html.H5(children='Null Hypothesis: Working From Home results in lower productivity.'),
-        html.H6(children= 'Please see github for code detail: https://github.com/skmcwilliams/decision_app'),
+        html.H2(children='Null Hypothesis: Working From Home results in lower productivity.'),
+        html.Markdown(children= 'Please see github for code detail: https://github.com/skmcwilliams/decision_app' ),
         ]),
     
     
     html.Div([
-        dcc.Markdown(children='Data provided was only for years 2016, synthetic years were created from 2018-2021, with 2020 onward being the treatment period of Working From Home.\
+        dcc.H4(children='Data provided was only for years 2016 and 2017, synthetic years were created from 2018-2021, with 2020 onward being the treatment period of Working From Home.\
                      Resulting DataFrame is below'),
-        dcc.Markdown(children='Databelow after modifying years and adding dummies for post, and post treatment'),
+        dcc.H4(children='Databelow after modifying years and adding dummies for post, and post treatment'),
         generate_table(wfh),
         generate_table(yr_wfh),
         ]),
                      
     html.Div([
-        dcc.Markdown(children='Data Check to make sure years are even and view distribution'),
+        dcc.H4(children='Data Check to make sure years are even and view distribution'),
         dcc.Graph(figure = year_bar),
         dcc.Graph(figure = state_bar),
         dcc.Graph(figure = sales_by_state),
@@ -114,20 +114,20 @@ app.layout = html.Div(children=[
         ]),
                      
     html.Div([
-        dcc.Markdown(children = 'First, conduct nonparametric DID calclations on the post-treatment group (Wisconsinites) by running statsmodels ols with sales as RHS variable and post, treatment, post-treatment as LHS, Results below.'),
+        dcc.H4(children = 'First, conduct nonparametric DID calclations on the post-treatment group (Wisconsinites) by running statsmodels ols with sales as RHS variable and post, treatment, post-treatment as LHS, Results below.'),
         generate_table(results_wfh),
-        dcc.Markdown(children='Post-treatment t-statistic greater than 2.575, making the post-treatment relevant at 99% Confidence Level. Reject null hypothesis that working from home will hinder performance.'),
-        dcc.Markdown(children = f'{did_conclusion}'),
-        generate_table(diffdf)
-        
+        dcc.H6(children = f'{did_conclusion}'),
+                dcc.H6(children=f'Post-treatment t-statistic of {para_t_stat} is greater than 2.575, making the post-treatment relevant at the 99% Confidence Level. Reject null hypothesis that working from home will hinder performance'),
+
+        generate_table(diffdf),
         ]),
     
     html.Div([
-        dcc.Markdown(children='Next, run parametric RDD calculations via regression model (statsmodels OLS)\
+        dcc.H4(children='Next, run parametric RDD calculations via regression model (statsmodels OLS)\
                      on post_years (# of years beyond 2019) and the threshold. Threshold = 1 where post_years > 0 else 0'),
         generate_table(rdd_df),
         generate_table((rdd_results)),
-        dcc.Markdown(children='High t-statistic for Threshold variable indicates that years beyond 2019, the WFH years, produce higher sales with a 99% Confidence Level')
+        dcc.H6(children=f'Threshold t-statistic of {rdd_t_stat} indicates that years beyond 2019, the WFH years, produce higher sales with a 99% Confidence Level')
         ])
 ])
 
