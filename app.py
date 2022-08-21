@@ -65,7 +65,7 @@ seconddiff = sum(wfh['sales'][(wfh['treat'] == 0) * (wfh['post'] == 1)])\
     - sum(wfh['sales'][(wfh['treat'] == 0) * (wfh['post'] == 0)])
 did = firstdiff - seconddiff
 did_conclusion = f"DID of {did} equates to {round((did/sales_2016)*100,2)}% sales increase over 2016 total sales"
-diffdf = pd.DataFrame([firstdiff,seconddiff,did]).T.rename(columns={0:"First Difference",1:"Second Difference",2:"DID"})
+diffdf = pd.DataFrame([firstdiff,seconddiff,did]).T.rename(columns={0:"First Difference",1:"Second Difference",2:"DID"}).reset_index()
 
 #%%wfh parametric
 results = smf.ols('sales ~ post + treat + post_treat',wfh).fit()
@@ -76,6 +76,7 @@ para_conclusion = t_test(para_t_stat)
 rdd_df = wfh.assign(threshold=(wfh["post_years"] > 0).astype(int)) #years 2020 and 2021
 rdd = smf.ols('sales ~ post_years * threshold',rdd_df).fit()
 rdd_results = pd.read_html(rdd.summary().tables[1].as_html(),header=0,index_col=0)[0]
+rdd_results = rdd_results.reset_index()
 rdd_t_stat = rdd_results.at['threshold','t']
 t_test(rdd_t_stat)
 #%% # STANDARD DASH APP LANGUAGE
@@ -98,7 +99,8 @@ app.layout = html.Div(children=[
         dcc.Markdown(children='Data provided was only for years 2016, synthetic years were created from 2018-2021, with 2020 onward being the treatment period of Working From Home.\
                      Resulting DataFrame is below'),
         dcc.Markdown(children='Databelow after modifying years and adding dummies for post, and post treatment'),
-        generate_table(wfh)
+        generate_table(wfh),
+        generate_table(yr_wfh),
         ]),
                      
     html.Div([
