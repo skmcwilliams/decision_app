@@ -8,12 +8,8 @@ Created on Sat Aug 20 12:51:40 2022
 
 import pandas as pd
 import numpy as np
-import plotly.io as pio
-import plotly.express as px
-import dash
-import dash_core_components as dcc
-import dash_html_components as html
 import statsmodels.formula.api as smf
+import matplotlib.pyplot as plt
 
 #%% funcs
 def t_test(t_statistic):
@@ -27,16 +23,6 @@ def t_test(t_statistic):
         else:
             return f"T-statistic of {round(t_statistic,2)} does not pass {k}% confidence level, accept null"
 
-
-def generate_table(dataframe, max_rows=5):
-    return html.Table(
-        # Header
-        [html.Tr([html.Th(col) for col in dataframe.columns]) ] +
-        # Body
-        [html.Tr([
-            html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
-        ]) for i in range(min(len(dataframe), max_rows))]
-    )
 #%% READ DATA DROP WISCONSIN COLUMN
 wfh = pd.read_csv('workingfromhome.csv').rename(columns={'wisconsin':"treat"}).set_index('employeeid')
 
@@ -51,12 +37,18 @@ wfh['post'] = np.where(wfh['mod_year'] >= 2020, 1, 0) # make 2020 as threshold o
 wfh['post_years'] = wfh['mod_year'] - 2019
 wfh['post_treat'] = wfh['post'] * wfh['treat'] # Interaction Term  to make dummy for post_treatment group = Wisconsin and 2017#%
 #%% charts
-year_bar = px.bar(wfh.groupby('mod_year').size(),title='Review Distribution of Modified Years').update_xaxes(type='category')
-state_bar = px.bar(wfh.groupby('state').size(),title = 'Distribution of State')
-sales_by_state = px.histogram(wfh,x='sales',color='state',barmode='stack',title = 'Stacked Sales Histogram by State') # show distribution of sales by state
-sales_by_year = px.histogram(wfh,x='sales',color='mod_year',barmode='stack',title = 'Stacked Sales Histogram by Modified Year') # distribution of sales by year
-sales_over_time = px.line(wfh.groupby(['state','mod_year'])['sales'].sum().reset_index(),
-                       x='mod_year',y='sales',color='state',title = 'Sales Over Time').update_xaxes(type='category') # chart of state and sales
+wfh.groupby('mod_year').size().plot(kind='bar') # number of each year is about even, data is fair
+plt.show()
+
+wfh.groupby('state').size().plot(kind='bar') # count of employees in each year is about even, data is fair
+plt.show()
+
+wfh.groupby('state')['sales'].plot(kind='kde',label=True) # Visualize no sales bias towards state prior to doing anything
+plt.show()
+
+wfh.groupby('mod_year')['sales'].plot(kind='kde',legend=True) 
+plt.show() # Visualize no bias in sales by mod year prior to doing anything (checking to see if modified year assignments are effectively randomized)
+
 #%%nonparametric analysis
 sales_2016 = sum(wfh['sales'][wfh['post']==0])
 firstdiff = sum(wfh['sales'][wfh['post_treat'] == 1])\
@@ -66,6 +58,7 @@ seconddiff = sum(wfh['sales'][(wfh['treat'] == 0) * (wfh['post'] == 1)])\
 did = firstdiff - seconddiff
 did_conclusion = f"DID of {did} equates to {round((did/sales_2016)*100,2)}% sales increase over 2016 total sales"
 diffdf = pd.DataFrame([firstdiff,seconddiff,did]).T.rename(columns={0:"First Difference",1:"Second Difference",2:"DID"})
+print(diffdf)
 
 #%%wfh parametric
 results = smf.ols('sales ~ post + treat + post_treat',wfh).fit()
@@ -73,62 +66,12 @@ results_wfh = pd.read_html(results.summary().tables[1].as_html(),header=0,index_
 results_wfh = results_wfh.reset_index()
 para_t_stat = results_wfh.at[3,'t']
 para_conclusion = t_test(para_t_stat)
+print(para_conclusion)
 #%% 
 rdd_df = wfh.assign(threshold=(wfh["post_years"] > 0).astype(int)) #years 2020 and 2021
 rdd = smf.ols('sales ~ post_years * threshold',rdd_df).fit()
 rdd_results = pd.read_html(rdd.summary().tables[1].as_html(),header=0,index_col=0)[0]
 rdd_results = rdd_results.reset_index()
 rdd_t_stat = rdd_results.at[2,'t']
-t_test(rdd_t_stat)
-#%% # STANDARD DASH APP LANGUAGE
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-server = app.server
-#%%
-# CUSTOM DASH APP LANGUAGE
-app.layout = html.Div(children=[
-    html.Div([
-        html.H1(children='Difference In Difference and Regression Discontinuity Design Models'),
-        html.H2(children='DID and RDD models based on project conducted in Quantitative Analytics class as part of MS Data Analytics degree at University of Wisconsin-Whitewater'),
-        html.H5(children='Null Hypothesis: Working From Home results in lower productivity.'),
-        dcc.Markdown(children= 'Please see github for code detail: https://github.com/skmcwilliams/decision_app' ),
-        ]),
-    
-    html.Div([
-        html.H4(children='Data provided was only for years 2016 and 2017, synthetic years were created from 2018-2021, with 2020 onward being the treatment period of Working From Home.\
-                     Resulting DataFrame is below'),
-        html.H4(children='Snapshot of DataFrame after modifying years and adding dummies for post, and post treatment'),
-        generate_table(wfh),
-        ]),
-                     
-    html.Div([
-        dcc.Graph(figure = year_bar),
-        dcc.Graph(figure = state_bar),
-        dcc.Graph(figure = sales_by_state),
-        dcc.Graph(figure = sales_by_year),
-        dcc.Graph(figure = sales_over_time),
-        ]),
-                     
-    html.Div([
-        html.H4(children = 'Nonparametric DID calclations on the post-treatment group (Wisconsinites)'),
-        generate_table(diffdf),
-        html.H6(children = f'{did_conclusion}'),
-        html.H4(children = 'Parametric analysis of post-treatment group.'),
-        generate_table(results_wfh),
-        html.H6(children=f'Post-treatment t-statistic of {para_t_stat} is greater than 2.575, making the post-treatment relevant at the 99% Confidence Level. Reject null hypothesis that working from home will hinder performance'),
-        ]),
-    
-    html.Div([
-        html.H6(children='Parametric RDD calculations via regression model (statsmodels OLS)\
-                     on post_years (# of years beyond 2019) and the threshold. Threshold = 1 where post_years > 0 else 0'),
-        generate_table(rdd_df),
-        html.H6(children = 'Results of Parametric RDD model'),
-        generate_table((rdd_results)),
-        html.H6(children=f'Threshold t-statistic of {rdd_t_stat} indicates that years beyond 2019, the WFH years, produce higher sales with a 99% Confidence Level')
-        ])
-])
-
-#%%RUN
-if __name__=='__main__':
-   app.run_server(debug=True)
-
+rdd_ttest = t_test(rdd_t_stat)
+print(rdd_ttest)
