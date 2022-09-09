@@ -1,2 +1,7 @@
-# Working From Home DID and RDD Analysis
-### Run model by opening https://decision_app.herokuapp.com/ and typing the ticker of desired stock for which to perform DCF valuation when requested. 
+# Working From Home DID and RDD Analysis - modified from Quantitative Analytics class as part of the MS Data Analytics program at UWW. Prompt Below.
+## A sharply rising share of employees now regularly engage in working from home, but there are concerns this can lead to ìshirking from home.î(Bloom et. al. (2015)). A nationwide travel agency company experimented with allowing its employees from the Wisconsin o¢ ce to work from home half of the time starting 1/1/2017; in the meantime, employees from the Michigan o¢ ce continued to work from the o¢ ce full time. Please design a di§erence-in-di§erences (DID) study, and use workingfromhom.csv to estimate how the working from home policy impacted workplace productivity. I suggest taking a look at the module 7 notes on the parametric DID to refresh your memory if you need to, you will also need to use dummy variables from Module 6. When you interpret your answer, provide the value of the DID estimate, what the magnitude means, and comment on statistical significance.
+### Note that this program creates a mod_days column to represent years 2016 and 2017 as days since the change, ranging from -30 to -1 for year 2016 and 1 to 30 for year 2017, this was in order to create the discontinuity chart. The program then produces a density chart to show that the randomized days are more or less normally distributed
+
+Given the analysis, the DID indicates working from home increased sales by 6%
+The treatment effect has a t-statistic allowing one to reject the null hypothesis with 99% confidence
+The post-treatment effect has a t-statistic allowing one to reject the null hypothessi with 99% confidence
