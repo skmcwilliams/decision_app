@@ -33,7 +33,7 @@ def t_test(t_statistic):
 wfh = pd.read_csv('workingfromhome.csv').rename(columns={'wisconsin':"treat"}).set_index('employeeid')
 
 """synthetically create more years, original assignemnt split 2016 and 2017, follow same thinking"""
-wfh['mod_days'] = wfh['year'].apply(lambda x: np.random.choice([i*-1 for i in range(1,365)]) if x == 2016 else np.random.choice(list(range(1,365))))
+wfh['mod_days'] = wfh['year'].apply(lambda x: np.random.choice([i*-1 for i in range(1,31)]) if x == 2016 else np.random.choice(list(range(1,31))))
 # check year distribution
 yr_wfh = pd.DataFrame(wfh['mod_days'].value_counts()).reset_index().rename(columns={'mod_days':'count','index':'mod_days'})
 yr_wfh.insert(2,"pct_total", round(yr_wfh['count']/yr_wfh['count'].sum(),2)*100)
@@ -49,9 +49,6 @@ wfh.groupby('state').size().plot(kind='bar',title='Count of Employees in Each St
 plt.show()
 
 wfh.groupby('state')['sales'].plot(kind='kde',legend=True,title='Normal Distribution of Sales by State is Acceptable') # Visualize no sales bias towards state prior to doing anything
-plt.show()
-
-wfh.groupby('mod_days')['sales'].sum().plot(kind='line',title='Sales Pre-Post Treatment')
 plt.show()
 
 #%%nonparametric analysis
@@ -71,9 +68,14 @@ results_wfh = results_wfh.reset_index()
 para_t_stat = results_wfh.at[3,'t']
 para_conclusion = t_test(para_t_stat)
 #%% 
-rdd_df = wfh.assign(threshold=(wfh["mod_days"] > 0).astype(int)) #years 2020 and 2021
+rdd_df = wfh.assign(threshold=(wfh["mod_days"] > 0).astype(int)) 
 rdd = smf.ols('sales ~ mod_days * threshold',rdd_df).fit()
 rdd_results = pd.read_html(rdd.summary().tables[1].as_html(),header=0,index_col=0)[0]
 rdd_results = rdd_results.reset_index()
 rdd_t_stat = rdd_results.at[2,'t']
 rdd_ttest = t_test(rdd_t_stat)
+#%%
+ax = wfh.plot.scatter(x="mod_days", y="sales", color="C0")
+wfh.assign(predictions=rdd.fittedvalues).plot(x="mod_days", y="predictions", ax=ax, color="C1")
+plt.title("Regression Discontinuity");
+plt.show()
